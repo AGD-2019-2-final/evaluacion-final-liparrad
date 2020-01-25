@@ -14,3 +14,12 @@ fs -rm -f -r output;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+datos = LOAD 'data.tsv' AS (upper_case:CHARARRAY,lower_case:BAG{tup:TUPLE(letter:CHARARRAY)}, obs:MAP[]);
+
+datos = FOREACH datos GENERATE FLATTEN(lower_case), FLATTEN(obs);
+
+datos = GROUP datos BY ($0,$1);
+
+datos = FOREACH datos GENERATE group , COUNT($1);
+
+STORE datos INTO 'output';

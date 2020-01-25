@@ -12,3 +12,12 @@ fs -rm -f -r output;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+datos = LOAD 'data.tsv' AS (upper_case:CHARARRAY, lower_case:BAG{tup:TUPLE(letter:CHARARRAY)},obs:CHARARRAY);
+
+datos1 = FOREACH datos GENERATE FLATTEN(lower_case) AS letter;
+
+agrupar = GROUP datos1 BY letter;
+
+conteo_letras = FOREACH agrupar GENERATE group, COUNT($1);
+
+STORE conteo_letras INTO 'output';

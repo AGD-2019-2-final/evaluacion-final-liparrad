@@ -33,3 +33,8 @@ u = LOAD 'data.csv' USING PigStorage(',')
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+datos = FOREACH u GENERATE surname;
+
+datos = FILTER datos BY (surname MATCHES '.*^[D-K].*');
+
+STORE datos INTO 'output';

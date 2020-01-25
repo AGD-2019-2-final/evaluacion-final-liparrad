@@ -27,5 +27,8 @@
 -- 
 fs -rm -f -r output;
 --
+datos = LOAD 'data.csv' USING PigStorage(',');
 
+datos = FOREACH datos GENERATE $1, $2;
 
+STORE datos INTO 'output' USING PigStorage('@');

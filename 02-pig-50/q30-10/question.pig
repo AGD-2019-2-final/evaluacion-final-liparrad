@@ -30,7 +30,7 @@
 -- 
 fs -rm -f -r output;
 --
-u = LOAD 'data.csv' USING PigStorage(',') 
+dat = LOAD 'data.csv' USING PigStorage(',') 
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
@@ -40,4 +40,22 @@ u = LOAD 'data.csv' USING PigStorage(',')
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+
+
+datos = FOREACH dat GENERATE birthday, SUBSTRING(birthday,8,10), SUBSTRING(birthday,8,10) AS INT,ToString(ToDate(birthday,'yyyy-MM-dd'),'E');
+
+datos = FOREACH datos GENERATE birthday, SUBSTRING(birthday,8,10), SUBSTRING(birthday,8,10) AS INT,(CASE $3
+                                                                                               WHEN 'Mon' THEN 'lunes'
+                                                                                               WHEN 'Tue' THEN 'martes'
+                                                                                               WHEN 'Wed' THEN 'miercoles'
+                                                                                               WHEN 'Thu' THEN 'jueves'
+                                                                                               WHEN 'Fri' THEN 'viernes'
+                                                                                               WHEN 'Sat' THEN 'sabado'
+                                                                                               WHEN 'Sun' THEN 'domingo'
+                                                                                               END) AS day;
+
+datos = FOREACH datos GENERATE birthday, SUBSTRING(birthday,8,10), SUBSTRING(birthday,8,10) AS INT, SUBSTRING(day,0,3), day;
+                        
+STORE datos INTO 'output' USING PigStorage(',');
+
 

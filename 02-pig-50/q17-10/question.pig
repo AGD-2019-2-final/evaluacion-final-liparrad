@@ -16,7 +16,7 @@
 -- 
 fs -rm -f -r output;
 --
-u = LOAD 'data.csv' USING PigStorage(',') 
+dat = LOAD 'data.csv' USING PigStorage(',') 
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
@@ -26,4 +26,9 @@ u = LOAD 'data.csv' USING PigStorage(',')
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+datos = FOREACH dat GENERATE firstname, color;
+
+datos = FILTER datos BY color MATCHES '^bl.*';
+
+STORE datos INTO 'output' USING PigStorage(',');
 

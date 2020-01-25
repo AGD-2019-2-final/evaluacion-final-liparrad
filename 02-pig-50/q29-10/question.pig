@@ -30,13 +30,41 @@
 -- 
 fs -rm -f -r output;
 -- 
-u = LOAD 'data.csv' USING PigStorage(',') 
+--u = LOAD 'data.csv' USING PigStorage(',') 
+--    AS (id:int, 
+--        firstname:CHARARRAY, 
+--        surname:CHARARRAY, 
+--        birthday:DATETIME, 
+--        color:CHARARRAY, 
+--        quantity:INT);
+
+dat = LOAD 'data.csv' USING PigStorage(',') 
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
+
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+
+datos = FOREACH dat GENERATE birthday, SUBSTRING(birthday,5,7), SUBSTRING(birthday,5,7) AS INT;
+
+datos = FOREACH datos GENERATE birthday,(CASE $2
+                                WHEN 1 THEN 'ene'
+                                WHEN 2 THEN 'feb'
+                                WHEN 3 THEN 'mar'
+                                WHEN 4 THEN 'abr'
+                                WHEN 5 THEN 'may'
+                                WHEN 6 THEN 'jun'
+                                WHEN 7 THEN 'jul'
+                                WHEN 8 THEN 'ago'
+                                WHEN 9 THEN 'sep'
+                                WHEN 10 THEN 'oct'
+                                WHEN 11 THEN 'nov'
+                                WHEN 12 THEN 'dic'
+                             END), SUBSTRING(birthday,5,7), SUBSTRING(birthday,5,7) AS INT;
+
+STORE datos INTO 'output' USING PigStorage(',');
