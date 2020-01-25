@@ -39,5 +39,29 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+DROP TABLE IF EXISTS inicio;
+CREATE TABLE inicio AS
+SELECT
+   c1,
+   UPPER(letras) AS letras
+FROM
+   tbl0
+LATERAL VIEW
+   explode(c5) tbl0 AS letras;
 
+
+DROP TABLE IF EXISTS respuesta;
+CREATE TABLE respuesta AS
+SELECT
+   collect_list(letras) AS c5t
+FROM
+   inicio
+GROUP BY
+   c1;
+
+
+INSERT OVERWRITE DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+COLLECTION ITEMS TERMINATED BY ':'
+SELECT * FROM respuesta;
 

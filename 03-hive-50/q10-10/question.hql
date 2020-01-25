@@ -24,3 +24,34 @@ LOAD DATA LOCAL INPATH 'data.tsv' INTO TABLE t0;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+DROP TABLE IF EXISTS resultado;
+CREATE TABLE resultado AS
+SELECT
+   c1,
+   c2,
+   valor
+FROM
+   inicio
+WHERE
+   c2 == letras;
+
+INSERT OVERWRITE DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM resultado;
+
+DROP TABLE IF EXISTS resultado;
+CREATE TABLE resultado AS
+SELECT
+   letras,
+   COUNT(*)
+FROM
+   t0
+LATERAL VIEW
+   explode(C3) unida AS letras, valor
+GROUP BY
+   letras;
+
+
+INSERT OVERWRITE DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM resultado;

@@ -39,4 +39,30 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+DROP TABLE IF EXISTS variables_anno;
+CREATE TABLE variables_anno AS
+SELECT c4, c5,
+SUBSTR(c4, 1, INSTR(c4,'-')-1) AS anno
+FROM tbl0;
 
+DROP TABLE IF EXISTS resultado;
+CREATE TABLE resultado AS SELECT anno, c5 FROM variables_anno;
+
+
+DROP TABLE IF EXISTS x;
+CREATE TABLE x AS
+SELECT
+   CAST(anno AS INT) AS anno,
+   result
+FROM
+   resultado
+LATERAL VIEW
+   explode(c5) resultado AS result;
+
+DROP TABLE IF EXISTS z;
+CREATE TABLE z AS SELECT anno, result, COUNT(*) AS conteo FROM x GROUP BY anno, result;
+
+
+INSERT OVERWRITE DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM z;

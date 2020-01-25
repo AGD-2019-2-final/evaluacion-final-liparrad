@@ -40,4 +40,17 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+DROP TABLE IF EXISTS lab7;
+CREATE TABLE lab7 AS
+SELECT
+   c2,
+   Collect_set(c1) AS letras
+FROM
+   tbl0
+GROUP BY
+   c2;
 
+INSERT OVERWRITE DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+COLLECTION ITEMS TERMINATED BY ':'
+SELECT * FROM lab7;

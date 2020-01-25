@@ -39,3 +39,38 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+DROP TABLE IF EXISTS uniondata;
+CREATE TABLE uniondata AS
+SELECT
+  tbl0.c1 AS c1,
+  tbl0.c2 AS c2,
+  tbl1.c4 AS c3
+FROM
+  tbl0 JOIN tbl1 ON tbl0.C1 = tbl1.C1;
+
+DROP TABLE IF EXISTS inicio;
+CREATE TABLE inicio  AS
+SELECT
+    c1,
+    c2,
+   letras, valor
+FROM
+   uniondata
+LATERAL VIEW
+   explode(C3) uniondata AS letras, valor;
+
+
+DROP TABLE IF EXISTS resultado;
+CREATE TABLE resultado AS
+SELECT
+   c1,
+   c2,
+   valor
+FROM
+   inicio
+WHERE
+   c2 == letras;
+
+INSERT OVERWRITE DIRECTORY 'output'
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+SELECT * FROM resultado;
